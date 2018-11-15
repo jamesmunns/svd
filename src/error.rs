@@ -47,8 +47,7 @@ pub enum SVDErrorKind {
     InvalidModifiedWriteValues(Element, String),
     #[fail(
         display = "The content of the element could not be parsed to a boolean value {}: {}",
-        _1,
-        _2
+        _1, _2
     )]
     InvalidBooleanValue(Element, String, ::std::str::ParseBoolError),
     #[fail(display = "encoding method not implemented for svd object {}", _0)]

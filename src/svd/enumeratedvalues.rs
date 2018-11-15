@@ -35,11 +35,13 @@ impl Parse for EnumeratedValues {
         Ok(EnumeratedValues {
             name: tree.get_child_text_opt("name")?,
             usage: parse::optional::<Usage>("usage", tree)?,
-            derived_from: tree.attributes
+            derived_from: tree
+                .attributes
                 .get(&"derivedFrom".to_owned())
                 .map(|s| s.to_owned()),
             values: {
-                let values: Result<Vec<_>, _> = tree.children
+                let values: Result<Vec<_>, _> = tree
+                    .children
                     .iter()
                     .filter(|t| t.name == "enumeratedValue")
                     .enumerate()
@@ -70,8 +72,7 @@ impl Encode for EnumeratedValues {
 
         match self.name {
             Some(ref d) => {
-                base.children
-                    .push(new_element("name", Some((*d).clone())));
+                base.children.push(new_element("name", Some((*d).clone())));
             }
             None => (),
         };

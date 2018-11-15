@@ -44,7 +44,8 @@ impl Parse for ClusterInfo {
             reset_value: parse::optional::<u32>("resetValue", tree)?,
             reset_mask: parse::optional::<u32>("resetMask", tree)?,
             children: {
-                let children: Result<Vec<_>, _> = tree.children
+                let children: Result<Vec<_>, _> = tree
+                    .children
                     .iter()
                     .filter(|t| t.name == "register" || t.name == "cluster")
                     .map(RegisterCluster::parse)
@@ -62,10 +63,8 @@ impl Encode for ClusterInfo {
     fn encode(&self) -> Result<Element, SVDError> {
         let mut e = new_element("cluster", None);
 
-        e.children.push(new_element(
-            "description",
-            Some(self.description.clone()),
-        ));
+        e.children
+            .push(new_element("description", Some(self.description.clone())));
 
         if let Some(ref v) = self.header_struct_name {
             e.children
@@ -78,8 +77,7 @@ impl Encode for ClusterInfo {
         ));
 
         if let Some(ref v) = self.size {
-            e.children
-                .push(new_element("size", Some(format!("{}", v))));
+            e.children.push(new_element("size", Some(format!("{}", v))));
         }
 
         if let Some(ref v) = self.access {
@@ -87,10 +85,8 @@ impl Encode for ClusterInfo {
         }
 
         if let Some(ref v) = self.reset_value {
-            e.children.push(new_element(
-                "resetValue",
-                Some(format!("{}", v)),
-            ));
+            e.children
+                .push(new_element("resetValue", Some(format!("{}", v))));
         }
 
         if let Some(ref v) = self.reset_mask {

@@ -38,17 +38,15 @@ impl Parse for Device {
     fn parse(tree: &Element) -> Result<Device, SVDError> {
         Ok(Device {
             name: tree.get_child_text("name")?,
-            schema_version: tree.attributes
-                .get("schemaVersion")
-                .unwrap()
-                .clone(),
+            schema_version: tree.attributes.get("schemaVersion").unwrap().clone(),
             cpu: parse::optional::<Cpu>("cpu", tree)?,
             version: tree.get_child_text_opt("version")?,
             description: tree.get_child_text_opt("description")?,
             address_unit_bits: parse::optional::<u32>("addressUnitBits", tree)?,
             width: None,
             peripherals: {
-                let ps: Result<Vec<_>, _> = tree.get_child_elem("peripherals")?
+                let ps: Result<Vec<_>, _> = tree
+                    .get_child_elem("peripherals")?
                     .children
                     .iter()
                     .map(Peripheral::parse)
@@ -87,27 +85,27 @@ impl Encode for Device {
         );
 
         match self.version {
-            Some(ref v) => elem.children
-                .push(new_element("version", Some(v.clone()))),
+            Some(ref v) => elem.children.push(new_element("version", Some(v.clone()))),
             None => (),
         }
 
         match self.description {
-            Some(ref v) => elem.children
+            Some(ref v) => elem
+                .children
                 .push(new_element("description", Some(v.clone()))),
             None => (),
         }
 
         match self.description {
-            Some(ref v) => elem.children.push(new_element(
-                "addressUnitBits",
-                Some(format!("{}", v)),
-            )),
+            Some(ref v) => elem
+                .children
+                .push(new_element("addressUnitBits", Some(format!("{}", v)))),
             None => (),
         }
 
         match self.width {
-            Some(ref v) => elem.children
+            Some(ref v) => elem
+                .children
                 .push(new_element("width", Some(format!("{}", v)))),
             None => (),
         }
@@ -119,10 +117,8 @@ impl Encode for Device {
             None => (),
         }
 
-        let peripherals: Result<Vec<_>, _> = self.peripherals
-            .iter()
-            .map(Peripheral::encode)
-            .collect();
+        let peripherals: Result<Vec<_>, _> =
+            self.peripherals.iter().map(Peripheral::encode).collect();
         elem.children.push(Element {
             name: String::from("peripherals"),
             attributes: HashMap::new(),

@@ -23,10 +23,7 @@ pub struct EnumeratedValue {
     pub(crate) _extensible: (),
 }
 impl EnumeratedValue {
-    fn _parse(
-        tree: &Element,
-        name: String,
-    ) -> Result<EnumeratedValue, SVDError> {
+    fn _parse(tree: &Element, name: String) -> Result<EnumeratedValue, SVDError> {
         Ok(EnumeratedValue {
             name,
             description: tree.get_child_text_opt("description")?,
@@ -44,10 +41,9 @@ impl Parse for EnumeratedValue {
 
     fn parse(tree: &Element) -> Result<EnumeratedValue, SVDError> {
         if tree.name != "enumeratedValue" {
-            return Err(SVDErrorKind::NotExpectedTag(
-                tree.clone(),
-                format!("enumeratedValue"),
-            ).into());
+            return Err(
+                SVDErrorKind::NotExpectedTag(tree.clone(), format!("enumeratedValue")).into(),
+            );
         }
         let name = tree.get_child_text("name")?;
         EnumeratedValue::_parse(tree, name.clone())
@@ -74,18 +70,15 @@ impl Encode for EnumeratedValue {
         match self.description {
             Some(ref d) => {
                 let s = (*d).clone();
-                base.children
-                    .push(new_element("description", Some(s)));
+                base.children.push(new_element("description", Some(s)));
             }
             None => (),
         };
 
         match self.value {
             Some(ref v) => {
-                base.children.push(new_element(
-                    "value",
-                    Some(format!("0x{:08.x}", *v)),
-                ));
+                base.children
+                    .push(new_element("value", Some(format!("0x{:08.x}", *v))));
             }
             None => (),
         };
@@ -110,8 +103,8 @@ mod tests {
 
     #[test]
     fn decode_encode() {
-        let tests = vec![
-            (EnumeratedValue {
+        let tests = vec![(
+            EnumeratedValue {
                 name: String::from("WS0"),
                 description: Some(String::from(
                     "Zero wait-states inserted in fetch or read transfers",
@@ -127,8 +120,8 @@ mod tests {
                     <value>0x00000000</value>
                     <isDefault>true</isDefault>
                 </enumeratedValue>
-            ")
-        ];
+            ",
+        )];
 
         run_test::<EnumeratedValue>(&tests[..]);
     }

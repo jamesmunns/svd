@@ -37,17 +37,11 @@ impl Parse for Field {
     type Error = SVDError;
     fn parse(tree: &Element) -> Result<Field, SVDError> {
         if tree.name != "field" {
-            return Err(SVDErrorKind::NotExpectedTag(
-                tree.clone(),
-                format!("field"),
-            ).into());
+            return Err(SVDErrorKind::NotExpectedTag(tree.clone(), format!("field")).into());
         }
         let name = tree.get_child_text("name")?;
         Field::_parse(tree, name.clone())
-            .context(SVDErrorKind::Other(format!(
-                "In field `{}`",
-                name
-            )))
+            .context(SVDErrorKind::Other(format!("In field `{}`", name)))
             .map_err(|e| e.into())
     }
 }
@@ -60,17 +54,15 @@ impl Field {
             bit_range: BitRange::parse(tree)?,
             access: parse::optional::<Access>("access", tree)?,
             enumerated_values: {
-                let values: Result<Vec<_>, _> = tree.children
+                let values: Result<Vec<_>, _> = tree
+                    .children
                     .iter()
                     .filter(|t| t.name == "enumeratedValues")
                     .map(EnumeratedValues::parse)
                     .collect();
                 values?
             },
-            write_constraint: parse::optional::<WriteConstraint>(
-                "writeConstraint",
-                tree,
-            )?,
+            write_constraint: parse::optional::<WriteConstraint>("writeConstraint", tree)?,
             modified_write_values: parse::optional::<ModifiedWriteValues>(
                 "modifiedWriteValues",
                 tree,
@@ -95,8 +87,7 @@ impl Encode for Field {
         };
 
         // Add bit range
-        elem.children
-            .append(&mut self.bit_range.encode()?);
+        elem.children.append(&mut self.bit_range.encode()?);
 
         match self.access {
             Some(ref v) => {
@@ -106,10 +97,7 @@ impl Encode for Field {
         };
 
         let enumerated_values: Result<Vec<Element>, SVDError> =
-            self.enumerated_values
-                .iter()
-                .map(|v| v.encode())
-                .collect();
+            self.enumerated_values.iter().map(|v| v.encode()).collect();
         elem.children.append(&mut enumerated_values?);
 
         match self.write_constraint {
@@ -140,41 +128,36 @@ mod tests {
 
     #[test]
     fn decode_encode() {
-        let tests = vec![
-            (
-                Field {
-                    name: String::from("MODE"),
-                    description: Some(String::from("Read Mode")),
-                    bit_range: BitRange {
-                        offset: 24,
-                        width: 2,
-                        range_type: BitRangeType::OffsetWidth,
-                    },
-                    access: Some(Access::ReadWrite),
-                    enumerated_values: vec![
-                        EnumeratedValues {
-                            name: None,
-                            usage: None,
-                            derived_from: None,
-                            values: vec![
-                                EnumeratedValue {
-                                    name: String::from("WS0"),
-                                    description: Some(String::from(
-                                        "Zero wait-states inserted in fetch or read transfers",
-                                    )),
-                                    value: Some(0),
-                                    is_default: None,
-                                    _extensible: (),
-                                },
-                            ],
-                            _extensible: (),
-                        },
-                    ],
-                    write_constraint: None,
-                    modified_write_values: None,
-                    _extensible: (),
+        let tests = vec![(
+            Field {
+                name: String::from("MODE"),
+                description: Some(String::from("Read Mode")),
+                bit_range: BitRange {
+                    offset: 24,
+                    width: 2,
+                    range_type: BitRangeType::OffsetWidth,
                 },
-                "
+                access: Some(Access::ReadWrite),
+                enumerated_values: vec![EnumeratedValues {
+                    name: None,
+                    usage: None,
+                    derived_from: None,
+                    values: vec![EnumeratedValue {
+                        name: String::from("WS0"),
+                        description: Some(String::from(
+                            "Zero wait-states inserted in fetch or read transfers",
+                        )),
+                        value: Some(0),
+                        is_default: None,
+                        _extensible: (),
+                    }],
+                    _extensible: (),
+                }],
+                write_constraint: None,
+                modified_write_values: None,
+                _extensible: (),
+            },
+            "
             <field>
               <name>MODE</name>
               <description>Read Mode</description>
@@ -189,9 +172,8 @@ mod tests {
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            "
-            ),
-        ];
+            ",
+        )];
 
         run_test::<Field>(&tests[..]);
     }

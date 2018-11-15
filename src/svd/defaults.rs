@@ -46,30 +46,21 @@ impl EncodeChildren for Defaults {
 
         match self.size {
             Some(ref v) => {
-                children.push(new_element(
-                    "size",
-                    Some(format!("0x{:08.x}", v)),
-                ));
+                children.push(new_element("size", Some(format!("0x{:08.x}", v))));
             }
             None => (),
         };
 
         match self.reset_value {
             Some(ref v) => {
-                children.push(new_element(
-                    "resetValue",
-                    Some(format!("0x{:08.x}", v)),
-                ));
+                children.push(new_element("resetValue", Some(format!("0x{:08.x}", v))));
             }
             None => (),
         };
 
         match self.reset_mask {
             Some(ref v) => {
-                children.push(new_element(
-                    "resetMask",
-                    Some(format!("0x{:08.x}", v)),
-                ));
+                children.push(new_element("resetMask", Some(format!("0x{:08.x}", v))));
             }
             None => (),
         };

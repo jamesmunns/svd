@@ -39,10 +39,7 @@ impl Parse for ModifiedWriteValues {
             "set" => Set,
             "modify" => Modify,
             s => {
-                return Err(SVDErrorKind::InvalidModifiedWriteValues(
-                    tree.clone(),
-                    s.into(),
-                ).into())
+                return Err(SVDErrorKind::InvalidModifiedWriteValues(tree.clone(), s.into()).into())
             }
         })
     }

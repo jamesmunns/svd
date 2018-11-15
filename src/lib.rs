@@ -95,10 +95,7 @@ pub(crate) fn new_element(name: &str, text: Option<String>) -> Element {
 #[cfg(test)]
 #[cfg(feature = "unproven")]
 pub fn run_test<
-    T: Parse<Error = SVDError, Object = T>
-        + Encode<Error = SVDError>
-        + ::std::fmt::Debug
-        + PartialEq,
+    T: Parse<Error = SVDError, Object = T> + Encode<Error = SVDError> + ::std::fmt::Debug + PartialEq,
 >(
     tests: &[(T, &str)],
 ) {

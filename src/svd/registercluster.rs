@@ -32,18 +32,14 @@ impl Parse for RegisterCluster {
     type Error = SVDError;
     fn parse(tree: &Element) -> Result<RegisterCluster, SVDError> {
         if tree.name == "register" {
-            Ok(RegisterCluster::Register(Register::parse(
-                tree,
-            )?))
+            Ok(RegisterCluster::Register(Register::parse(tree)?))
         } else if tree.name == "cluster" {
             Ok(RegisterCluster::Cluster(Cluster::parse(tree)?))
         } else {
-            Err(SVDError::from(
-                SVDErrorKind::InvalidRegisterCluster(
-                    tree.clone(),
-                    tree.name.clone(),
-                ),
-            ))
+            Err(SVDError::from(SVDErrorKind::InvalidRegisterCluster(
+                tree.clone(),
+                tree.name.clone(),
+            )))
         }
     }
 }

@@ -41,17 +41,11 @@ impl Parse for Peripheral {
 
     fn parse(tree: &Element) -> Result<Peripheral, SVDError> {
         if tree.name != "peripheral" {
-            return Err(SVDErrorKind::NotExpectedTag(
-                tree.clone(),
-                format!("peripheral"),
-            ).into());
+            return Err(SVDErrorKind::NotExpectedTag(tree.clone(), format!("peripheral")).into());
         }
         let name = tree.get_child_text("name")?;
         Peripheral::_parse(tree, name.clone())
-            .context(SVDErrorKind::Other(format!(
-                "In peripheral `{}`",
-                name
-            )))
+            .context(SVDErrorKind::Other(format!("In peripheral `{}`", name)))
             .map_err(|e| e.into())
     }
 }
@@ -59,15 +53,9 @@ impl Parse for Peripheral {
 impl Peripheral {
     pub fn derive_from(&self, other: &Peripheral) -> Peripheral {
         let mut derived = self.clone();
-        derived.group_name = derived
-            .group_name
-            .or_else(|| other.group_name.clone());
-        derived.description = derived
-            .description
-            .or_else(|| other.description.clone());
-        derived.registers = derived
-            .registers
-            .or_else(|| other.registers.clone());
+        derived.group_name = derived.group_name.or_else(|| other.group_name.clone());
+        derived.description = derived.description.or_else(|| other.description.clone());
+        derived.registers = derived.registers.or_else(|| other.registers.clone());
         if derived.interrupt.is_empty() {
             derived.interrupt = other.interrupt.clone();
         }
@@ -82,12 +70,10 @@ impl Peripheral {
             group_name: tree.get_child_text_opt("groupName")?,
             description: tree.get_child_text_opt("description")?,
             base_address: tree.get_child_u32("baseAddress")?,
-            address_block: parse::optional::<AddressBlock>(
-                "addressBlock",
-                tree,
-            )?,
+            address_block: parse::optional::<AddressBlock>("addressBlock", tree)?,
             interrupt: {
-                let interrupt: Result<Vec<_>, _> = tree.children
+                let interrupt: Result<Vec<_>, _> = tree
+                    .children
                     .iter()
                     .filter(|t| t.name == "interrupt")
                     .enumerate()
@@ -109,9 +95,7 @@ impl Peripheral {
             } else {
                 None
             },
-            derived_from: tree.attributes
-                .get("derivedFrom")
-                .map(|s| s.to_owned()),
+            derived_from: tree.attributes.get("derivedFrom").map(|s| s.to_owned()),
             _extensible: (),
         })
     }
@@ -138,10 +122,8 @@ impl Encode for Peripheral {
         };
         match self.display_name {
             Some(ref v) => {
-                elem.children.push(new_element(
-                    "displayName",
-                    Some(format!("{}", v)),
-                ));
+                elem.children
+                    .push(new_element("displayName", Some(format!("{}", v))));
             }
             None => (),
         };
@@ -154,10 +136,8 @@ impl Encode for Peripheral {
         };
         match self.description {
             Some(ref v) => {
-                elem.children.push(new_element(
-                    "description",
-                    Some(format!("{}", v)),
-                ));
+                elem.children
+                    .push(new_element("description", Some(format!("{}", v))));
             }
             None => (),
         };
@@ -172,17 +152,13 @@ impl Encode for Peripheral {
             None => (),
         };
 
-        let interrupts: Result<Vec<_>, _> = self.interrupt
-            .iter()
-            .map(Interrupt::encode)
-            .collect();
+        let interrupts: Result<Vec<_>, _> = self.interrupt.iter().map(Interrupt::encode).collect();
 
         elem.children.append(&mut interrupts?);
 
         match self.registers {
             Some(ref v) => {
-                let children: Result<Vec<_>, _> =
-                    v.iter().map(|&ref e| e.encode()).collect();
+                let children: Result<Vec<_>, _> = v.iter().map(|&ref e| e.encode()).collect();
 
                 elem.children.push(Element {
                     name: String::from("registers"),

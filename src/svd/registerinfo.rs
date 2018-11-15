@@ -45,10 +45,7 @@ impl Parse for RegisterInfo {
     fn parse(tree: &Element) -> Result<RegisterInfo, SVDError> {
         let name = tree.get_child_text("name")?;
         RegisterInfo::_parse(tree, name.clone())
-            .context(SVDErrorKind::Other(format!(
-                "In register `{}`",
-                name
-            )))
+            .context(SVDErrorKind::Other(format!("In register `{}`", name)))
             .map_err(|e| e.into())
     }
 }
@@ -83,10 +80,7 @@ impl RegisterInfo {
                     None
                 }
             },
-            write_constraint: parse::optional::<WriteConstraint>(
-                "writeConstraint",
-                tree,
-            )?,
+            write_constraint: parse::optional::<WriteConstraint>("writeConstraint", tree)?,
             modified_write_values: parse::optional::<ModifiedWriteValues>(
                 "modifiedWriteValues",
                 tree,
@@ -116,30 +110,24 @@ impl Encode for RegisterInfo {
 
         match self.alternate_group {
             Some(ref v) => {
-                elem.children.push(new_element(
-                    "alternateGroup",
-                    Some(format!("{}", v)),
-                ));
+                elem.children
+                    .push(new_element("alternateGroup", Some(format!("{}", v))));
             }
             None => (),
         }
 
         match self.alternate_register {
             Some(ref v) => {
-                elem.children.push(new_element(
-                    "alternateRegister",
-                    Some(format!("{}", v)),
-                ));
+                elem.children
+                    .push(new_element("alternateRegister", Some(format!("{}", v))));
             }
             None => (),
         }
 
         match self.derived_from {
             Some(ref v) => {
-                elem.children.push(new_element(
-                    "derivedFrom",
-                    Some(format!("{}", v)),
-                ));
+                elem.children
+                    .push(new_element("derivedFrom", Some(format!("{}", v))));
             }
             None => (),
         }
@@ -161,20 +149,16 @@ impl Encode for RegisterInfo {
 
         match self.reset_value {
             Some(ref v) => {
-                elem.children.push(new_element(
-                    "resetValue",
-                    Some(format!("0x{:08.x}", v)),
-                ));
+                elem.children
+                    .push(new_element("resetValue", Some(format!("0x{:08.x}", v))));
             }
             None => (),
         };
 
         match self.reset_mask {
             Some(ref v) => {
-                elem.children.push(new_element(
-                    "resetMask",
-                    Some(format!("0x{:08.x}", v)),
-                ));
+                elem.children
+                    .push(new_element("resetMask", Some(format!("0x{:08.x}", v))));
             }
             None => (),
         };
@@ -235,9 +219,7 @@ mod tests {
                 reset_mask: Some(0x00000023),
                 fields: Some(vec![Field {
                     name: String::from("WREN"),
-                    description: Some(String::from(
-                        "Enable Write/Erase Controller",
-                    )),
+                    description: Some(String::from("Enable Write/Erase Controller")),
                     bit_range: BitRange {
                         offset: 0,
                         width: 1,
